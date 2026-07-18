@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secure-compute-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: secure-compute-layer
+  template:
+    metadata:
+      labels:
+        app: secure-compute-layer
+    spec:
+      serviceAccountName: secure-app-sa
+      containers:
+        - name: secure-processor
+          image: yourdockerhubusername/secure-backend:v1.0
+          ports:
+            - containerPort: 8080
+          # Enforce strict OS-level kernel-level security isolation profiles
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: secure-compute-service
+  namespace: default
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: secure-compute-layer
