@@ -318,7 +318,10 @@ The control plane provisions non-root pods with immutable filesystems, dropped c
 
 Static configuration scans using Trivy demonstrate that the hardened `deployment.yaml` manifest successfully resolves all critical OS kernel, privilege escalation, and resource boundary security risks, passing the security gate with **0 High** and **0 Critical** vulnerabilities.
 
-[INSERT SCREENSHOT PROOF 1: TRIVY SCAN REPORT SHOWING DEPLOYMENT.YAML PASSING WITH 0 HIGH / 0 CRITICAL FINDINGS]
+<img width="1231" height="677" alt="Screenshot 1" src="https://github.com/user-attachments/assets/7403fee8-5a71-475a-8dc1-e94904863cbe" />
+<img width="1045" height="337" alt="Screenshot 2" src="https://github.com/user-attachments/assets/379ae9bf-ac05-4a3e-b84c-e07fa7bfa68b" />
+
+
 
 ---
 
@@ -332,7 +335,14 @@ To verify policy enforcement, Trivy was executed against an intentionally insecu
 
 This proves the pipeline halts unsafe code deployment.
 
-[INSERT SCREENSHOT PROOF 2: TRIVY SCAN REPORT FLAGGING 19 MISCONFIGURATIONS AND 3 HIGH SEVERITY VIOLATIONS ON TEST-INSECURE.YAML]
+<img width="1237" height="913" alt="Screenshot 3" src="https://github.com/user-attachments/assets/46c28018-9d2f-4a20-99f2-6ae1613fdef4" />
+<img width="1047" height="804" alt="Screenshot 4" src="https://github.com/user-attachments/assets/466f1372-bf65-4547-8277-a93bd7135e5d" />
+<img width="1495" height="795" alt="Screenshot 5" src="https://github.com/user-attachments/assets/7e33e033-0a6b-49e7-af43-90498f0ab0b0" />
+<img width="1249" height="792" alt="Screenshot 6" src="https://github.com/user-attachments/assets/2dd4d10f-4080-4e7e-98e0-b87bffb655c8" />
+<img width="975" height="792" alt="Screenshot 7" src="https://github.com/user-attachments/assets/5f094f35-3a57-4a40-87b6-ccb933000f00" />
+<img width="962" height="763" alt="Screenshot 8" src="https://github.com/user-attachments/assets/5cc3633b-bd7d-4e2f-94cc-47ee2e27538f" />
+<img width="1609" height="542" alt="Screenshot 9" src="https://github.com/user-attachments/assets/9fcfba06-f8fd-454a-9276-31084c2b9a61" />
+
 
 ---
 
@@ -340,7 +350,8 @@ This proves the pipeline halts unsafe code deployment.
 
 Executing an unapproved test pod (`unauthorized-attacker`) attempting to reach `secure-compute-service` triggers an active connection drop due to the `default-deny-all` NetworkPolicy. The command times out and terminates with `Status: Error`, confirming that unwhitelisted cross-namespace ingress traffic is blocked at the network layer.
 
-[INSERT SCREENSHOT PROOF 3: TERMINAL OUTPUT SHOWING GET NETWORKPOLICIES ALONGSIDE UNAUTHORIZED-ATTACKER POD IN ERROR STATUS DUE TO DROPPED TRAFFIC]
+<img width="1536" height="340" alt="Screenshot 10" src="https://github.com/user-attachments/assets/6608bb53-08f5-4bbf-b50a-59ec1fd9fc21" />
+
 
 ---
 
@@ -376,7 +387,8 @@ touch: /test.txt: Read-only file system
 
 This proves write operations are blocked across the root filesystem.
 
-[INSERT SCREENSHOT PROOF 4: TERMINAL WINDOW SHOWING UNKNOWN UID 10001 AND READ-ONLY FILE SYSTEM ERROR RESPONSES]
+<img width="1207" height="177" alt="Screenshot 11" src="https://github.com/user-attachments/assets/9ab6a0ab-5576-4055-9e31-bd573d72a15b" />
+
 
 ---
 
