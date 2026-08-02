@@ -1,26 +1,66 @@
 pipeline {
     agent any
+
+    environment {
+        IMAGE_NAME = 'sun003/secure-backend'
+        IMAGE_TAG  = 'v1.0'
+        REGISTRY   = 'docker.io'
+    }
+
     stages {
-        stage('Static Application Security Testing') {
+        stage('Checkout Code') {
             steps {
-                echo 'Auditing Kubernetes manifests for security compliance misconfigurations...'
-                // Scan manifests directory using Trivy tool execution commands
-                sh 'trivy config ./k8s'
+                checkout scm
             }
         }
-        stage('Container Image Scan') {
+
+        stage('Build Container Image') {
             steps {
-                echo 'Auditing container image layers for known vulnerability exploits...'
-                sh 'trivy image yourdockerhubusername/secure-backend:v1.0'
+                dir('app') {
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                }
             }
         }
-        stage('Least-Privilege Cluster Deployment') {
+
+        stage('Static Security Scan (Trivy Config)') {
             steps {
-                echo 'Applying hardened manifests to zero-trust cluster topologies...'
-                sh 'kubectl apply -f k8s/rbac.yaml'
-                sh 'kubectl apply -f k8s/network-policy.yaml'
-                sh 'kubectl apply -f k8s/deployment.yaml'
+                script {
+                    echo 'Scanning Kubernetes Manifests for Misconfigurations...'
+                    sh "trivy config ./k8s/deployment.yaml --exit-code 1 --severity HIGH,CRITICAL"
+                }
             }
+        }
+
+        stage('Container Image Security Scan (Trivy Image)') {
+            steps {
+                script {
+                    echo 'Scanning Built Container Image for Vulnerabilities...'
+                    sh "trivy image ${IMAGE_NAME}:${IMAGE_TAG} --exit-code 1 --severity HIGH,CRITICAL"
+                }
+            }
+        }
+
+        stage('Deploy Hardened Manifests to Kubernetes') {
+            steps {
+                script {
+                    echo 'Applying Hardened Infrastructure Manifests...'
+                    sh "kubectl apply -f ./k8s/rbac.yaml"
+                    sh "kubectl apply -f ./k8s/network-policy.yaml"
+                    sh "kubectl apply -f ./k8s/deployment.yaml"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'DevSecOps Hardening Pipeline Executed Successfully!'
+        }
+        failure {
+            echo 'Pipeline Failed: Security Gate Policy Violation Intercepted!'
         }
     }
 }
