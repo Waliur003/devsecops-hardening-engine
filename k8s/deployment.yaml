@@ -14,20 +14,37 @@ spec:
         app: secure-compute-layer
     spec:
       serviceAccountName: secure-app-sa
+      # Pod-level Security Context (fixes KSV-0118, KSV-0030, KSV-0104)
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: secure-processor
-          image: yourdockerhubusername/secure-backend:v1.0
+          # Updated with your real Docker Hub image (fixes KSV-0125)
+          image: sun003/secure-backend:v1.0
           ports:
             - containerPort: 8080
-          # Enforce strict OS-level kernel-level security isolation profiles
+          # Container-level Security Context
           securityContext:
             runAsNonRoot: true
-            runAsUser: 1000
+            runAsUser: 10001
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             capabilities:
               drop:
                 - ALL
+          # Resource Limits and Requests (fixes KSV-0011, KSV-0015, KSV-0016, KSV-0018)
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
           livenessProbe:
             httpGet:
               path: /healthz
