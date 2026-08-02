@@ -12,22 +12,6 @@ This project implements a **defense-in-depth framework** across the entire softw
 
 ---
 
-## Repository Name
-
-```text
-devsecops-hardening-engine
-```
-
----
-
-## Project Summary
-
-```text
-Defensive microservice architecture, automated static vulnerability scanning gates (Trivy), Least-Privilege RBAC, Zero-Trust network micro-segmentation, and kernel-level container security context enforcement on Kubernetes.
-```
-
----
-
 ## System Architecture
 
 The architecture enforces security guardrails at every layer of the deployment stack, combining shift-left static analysis with runtime kernel isolation.
